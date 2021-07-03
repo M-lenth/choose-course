@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<span th:fragment="page">
+
+    <!-- 根据用户类型查询显示 -->
+        <div class="page" th:if="${session.user.user.type eq 0}">
+            <a th:href="@{/user/1/{type}(type=${type})}">首页</a>
+            <a th:if="${page.hasPreviousPage}"
+               th:href="@{/user/{page}/{type}(page=${page.prePage},type=${type})}">&lt;</a>
+            <a href="#" th:text="${page.pageNum}">2</a>
+            <a th:if="${page.hasNextPage}"
+               th:href="@{/user/{page}/{type}(page=${page.nextPage},type=${type})}">&gt;</a>
+            <a th:href="@{/user/{page}/{type}(page=${page.pages},type=${type})}">末页</a>
+        </div>
+    <div class="page" th:if="${session.user.user.type eq 1}">
+            <a th:href="@{/user/teacher/{teacher}/1(teacher=${session.user.user.id})}">首页</a>
+            <a th:if="${page.hasPreviousPage}"
+               th:href="@{/user/teacher/{teacher}/{page}(page=${page.prePage},teacher=${session.user.user.id})}">&lt;</a>
+            <a href="#" th:text="${page.pageNum}">2</a>
+            <a th:if="${page.hasNextPage}"
+               th:href="@{/user/teacher/{teacher}/{page}(page=${page.nextPage},teacher=${session.user.user.id})}">&gt;</a>
+            <a th:href="@{/user/teacher/{teacher}/{page}(page=${page.pages},teacher=${session.user.user.id})}">末页</a>
+        </div>
+    <!--&lt;!&ndash; 使用搜索框查询显示 &ndash;&gt;
+    <span th:if="${type ne -1}">
+        <div class="page">
+            <a th:href="@{/user/1/{type}(type=${type})}">首页</a>
+            <a th:if="${page.hasPreviousPage}"
+               th:href="@{/user/{page}/{type}(page=${page.prePage},type=${type})}">&lt;</a>
+            <a href="#" th:text="${page.pageNum}">2</a>
+            <a th:if="${page.hasNextPage}"
+               th:href="@{/user/{page}/{type}(page=${page.nextPage},type=${type})}">&gt;</a>
+            <a th:href="@{/user/{page}/{type}(page=${page.pages},type=${type})}">末页</a>
+        </div>
+    </span>-->
+</span>
+</html>

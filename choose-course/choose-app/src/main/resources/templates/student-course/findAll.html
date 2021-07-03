@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看所有选课</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/page.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/table.css}">
+    <style>
+
+        table {
+            width: 100%;
+            text-align: center;
+            border: 0;
+            border-collapse: collapse;
+        }
+
+        tr h1 {
+            font-family: "宋体", serif;
+        }
+
+        td {
+            color: #FFFFFF;
+            border: 1px solid;
+        }
+
+        tr {
+            height: 40px;
+        }
+
+        tr:nth-child(2n) {
+            background: #00aaaa;
+        }
+
+        .courseName {
+            color: #EEEEEE;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .courseName:hover {
+            color: #0055ff;
+        }
+    </style>
+</head>
+<body>
+<!-- 用户信息显示页 -->
+<span th:replace="/public/left :: leftpage"></span>
+<div class="right">
+    <table>
+        <tr>
+            <td colspan="5"><h1><span th:text="${session.user.user.name}"></span>所选课程</h1></td>
+            <td>
+                <a th:href="@{/course/{id}/1(id=${session.user.user.id})}" class="addUserA">添加选课&emsp;&gt;</a>
+            </td>
+        </tr>
+        <tr>
+            <td width="10%">选课编号</td>
+            <td width="10%">课程编号</td>
+            <td width="25%">课程名称</td>
+            <td width="20%">是否测试</td>
+            <td width="25%">测试分数</td>
+            <td width="10%">操作</td>
+        </tr>
+        <tr th:each="sc:${page.list}">
+            <td th:text="${sc.id}"></td>
+            <td th:text="${sc.courseId}" class="courseID"></td>
+            <td><a th:id="|cName${scStat.index+1}|" class="courseName" th:href="@{/course/{id}(id=${sc.courseId})}"></a>
+            </td>
+            <td th:text="${sc.isTest == 1}?'已测试':'未测试'"></td>
+            <td th:text="${sc.score == null}?'0':${sc.score}"></td>
+            <td>
+                <img th:src="@{/img/delete.png}" width="24px" title="退课" style="cursor: pointer;"
+                     th:onclick="deleteCourse([[${sc.id}]])">
+            </td>
+        </tr>
+    </table>
+
+    <span>
+        <div class="page">
+            <a th:href="@{/student-course/1/{id}(id=${session.user.user.id})}">首页</a>
+            <a th:if="${page.hasPreviousPage}"
+               th:href="@{/student-course/{page}/{id}(page=${page.prePage},id=${session.user.user.id})}">&lt;</a>
+            <a href="#" th:text="${page.pageNum}">2</a>
+            <a th:if="${page.hasNextPage}"
+               th:href="@{/student-course/{page}/{id}(page=${page.nextPage},id=${session.user.user.id})}">&gt;</a>
+            <a th:href="@{/student-course/{page}/{id}(page=${page.pages},id=${session.user.user.id})}">末页</a>
+        </div>
+    </span>
+    <form method="post" id="deleteForm">
+        <input name="_method" value="delete" type="hidden">
+    </form>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/js/jquery-3.5.1.min.js}">
+</script>
+<script th:inline="javascript">
+    function getJsonLength(jsonData) {
+        var jsonLength = 0;
+        for (var item in jsonData) {
+            jsonLength++;
+        }
+        return jsonLength;
+    }
+
+    var index;
+    var type = [[${session.user.user.type}]]
+    if (type == 0) {
+        index = 4;
+    } else if (type == 2) {
+        index = 1;
+    }
+    var p = [[${page.pageNum}]]
+    var uid = [[${session.user.user.id}]]
+    $(document).ready(function () {
+        var $cName = $(".courseName");
+        $.ajax({
+            url: "/course/json/" + p + "/" + uid,
+            success: function (result) {
+                var length = getJsonLength(result)
+                for (var i = 0; i < length; i++) {
+                    $cName[i].innerText = result[i].name;
+                }
+            }
+        });
+
+    })
+</script>
+<script>
+    var $lis = $("li");
+    $lis[index].className = "select";
+
+    // 使用点击事件
+    function deleteCourse(scID) {
+        if (confirm("确认删除？")) {
+            $("#deleteForm").attr("action", "/student-course/" + scID).submit();
+        }
+    }
+
+</script>
+</html>

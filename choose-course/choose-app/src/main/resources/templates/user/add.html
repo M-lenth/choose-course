@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加用户</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/addUser.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/page.css}">
+</head>
+<body>
+<!-- 添加用户 -->
+<span th:replace="/public/left :: leftpage"></span>
+<div class="right">
+    <button onclick="history.go(-1);" class="goback">返回</button>
+    <form th:action="@{/user}" id="form" method="post">
+        <input th:if="${user != null}" type="hidden" name="_method" value="put">
+        <div class="addUser">
+            <label>
+                <input type="text" th:value="${user ne null}?${user.user.name}" placeholder="姓名" name="name">
+            </label>
+            <label>
+                <input type="text" th:if="${user eq null}" placeholder="密码" name="password">
+                <input type="hidden" th:if="${user ne null}" th:value="${user.user.password}"
+                       placeholder="密码" name="password">
+            </label>
+            <label>
+                <input type="text" th:if="${user ne null}" th:value="${user.user.id}" readonly placeholder="ID"
+                       name="id">
+                <input type="text" th:if="${user eq null}" placeholder="ID" name="id">
+            </label>
+            <div th:if="${user ne null}?${user.user.grade ne null}:true">
+                <font color="#777" size="2">年&emsp;&emsp;级</font> &emsp;&emsp;&emsp;
+                <select id="grade" name="grade">
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                </select>
+            </div>
+            <div th:if="${user ne null}?${user.user.type ne 0}:true">
+                <font color="#777" size="2">用户类型</font> &emsp;&emsp;&emsp;
+                <select id="type" name="type">
+                    <option value="0">管理员</option>
+                    <option value="1">教师</option>
+                    <option value="2">学生</option>
+                </select>
+            </div>
+            <div th:if="${user ne null}?!${user.user.type ne 2}:true" id="department">
+                <font color="#777" size="2">院系班级</font> &emsp;&emsp;&emsp;
+                <select name="departmentId" id="deptId" style="width: 98px;">
+                    <option th:each="dept : ${depts}" th:value="${dept.id}" th:text="${dept.name}"></option>
+                </select>
+                <select name="majorId" id="majorId" style="width: 98px;">
+                    <option th:each="major:${majors}" th:value="${major.id}" th:text="${major.name}"></option>
+                </select>
+            </div>
+            <button type="submit" id="sub" th:if="${session.user.user.type eq 0}"
+                    th:text="${user eq null}?'添加':'修改'">添加</button>
+        </div>
+    </form>
+</div>
+</body>
+<script th:src="@{/js/jquery-3.5.1.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/set.js}" type="text/javascript"></script>
+<script>
+    // 显示左边的选中状态
+    $("li")[1].className = "select";
+    // 动态获取专业
+    $("#deptId").change(function () {
+        var deptId = $(this).val();
+        $.ajax({
+            url: "http://localhost:8001/major/dept/" + deptId,
+            type: "get",
+            success: function (results) {
+                var $major = $("#majorId");
+                // 设置select内容为空
+                $major.html("");
+                // 循环追加option内容
+                for (var i = 0; i < results.length; i++) {
+                    $major.append("<option value=" + results[i].id + ">"
+                        + results[i].name + "</option>")
+                }
+            }
+        });
+    });
+</script>
+<script th:inline="javascript">
+    if ([[${user}]] != null) {
+        var type = [[${user.user.type}]];
+        var grade = [[${user.user.grade}]];
+        $(document).ready(function () {
+            if (type != 0) {
+                set_select_checked("type", type)
+            }
+            if (grade != null) {
+                set_select_checked("grade", grade)
+            }
+        })
+    }
+</script>
+</html>
+

@@ -1,0 +1,32 @@
+
+table {
+    width: 100%;
+    text-align: center;
+    border: 0;
+    border-collapse: collapse;
+}
+
+tr h1 {
+    font-family: "宋体";
+}
+
+td {
+    color: #FFFFFF;
+    border: 1px solid;
+}
+
+tr {
+    height: 40px;
+}
+
+tr:nth-child(2n) {
+    background: #00aaaa;
+}
+
+.addUserA {
+    text-decoration: none;
+    color: aqua;
+}
+.addUserA:hover{
+    color: #0099ff;
+}

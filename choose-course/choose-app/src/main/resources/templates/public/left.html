@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <div class="left" th:fragment="left_manager">
+        <a th:href="@{/user/info}"><li>管理员信息</li></a>
+        <a th:href="@{/user/1/-1}"><li>用户管理</li></a>
+        <a th:href="@{/major/page/1}"><li>专业管理</li></a>
+        <a th:href="@{/course/page/1}"><li>课程管理</li></a>
+        <a th:href="@{/user/update-pwd}"><li>修改密码</li></a>
+        <a th:href="@{/user/logout}"><li>注&emsp;&emsp;销</li></a>
+    </div>
+    <div class="left" th:fragment="left_teacher">
+        <a th:href="@{/user/info}"><li>个人信息</li></a>
+        <a th:href="@{/user/teacher/{id}/1(id=${session.user.user.id})}"><li>所有学生</li></a>
+        <a th:href="@{/user/update-pwd}"><li>修改密码</li></a>
+        <a th:href="@{/user/logout}"><li>注&emsp;&emsp;销</li></a>
+    </div>
+    <div class="left" th:fragment="left_student">
+        <a th:href="@{/user/info}"><li>个人信息</li></a>
+        <a th:href="@{/student-course/1/{id}(id=${session.user.user.id})}"><li>查看选课</li></a>
+        <a th:href="@{/user/update-pwd}"><li>修改密码</li></a>
+        <a th:href="@{/user/logout}"><li>注&emsp;&emsp;销</li></a>
+    </div>
+<span th:fragment="leftpage">
+    <span th:if="${session.user.user.type} eq 2">
+        <div th:replace="public/left :: left_student"></div>
+    </span>
+    <span th:if="${session.user.user.type} eq 1">
+        <div th:replace="public/left :: left_teacher"></div>
+    </span>
+    <span th:if="${session.user.user.type} eq 0">
+        <div th:replace="public/left :: left_manager"></div>
+    </span>
+
+    <div class="top">
+        <h1>XX在线选课系统</h1>
+    </div>
+</span>
+</html>

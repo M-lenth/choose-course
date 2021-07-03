@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理用户</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/table.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/page.css}">
+    <style>
+        .page {
+            position: absolute;
+            bottom: 50px;
+            left: 43%;
+        }
+
+        .page a {
+            height: 37px;
+            width: 75px;
+            background-color: teal;
+            color: #EEE;
+            font-size: 16px;
+            border: none;
+            display: inline-block;
+            line-height: 37px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .page a:hover {
+            color: #0099ff;
+        }
+
+        .usertype {
+            display: inline-block;
+            float: right;
+            width: 100%;
+            height: 38px;
+            outline: none;
+            background-color: transparent;
+            text-align: center;
+            color: #0099ff;
+            font-size: 18px;
+            padding-left: 30%;
+        }
+
+    </style>
+</head>
+<body>
+<!-- 用户信息显示页 -->
+<span th:replace="/public/left :: leftpage"></span>
+<div class="right">
+    <table cellspacing="0">
+        <tr>
+            <td th:colspan="${session.user.user.type eq 0}?'4':'6'">
+                <h1>所有
+                    <span th:text="${session.user.user.type eq 0}?'用户':'学生'"></span>
+                </h1>
+            </td>
+            <td colspan="1" th:if="${session.user.user.type eq 0}">
+                <select class="usertype" id="usertype">
+                    <option value="-1">全部</option>
+                    <option value="0">管理员</option>
+                    <option value="1">教师</option>
+                    <option value="2">学生</option>
+                </select>
+            </td>
+            <td th:if="${session.user.user.type eq 0}">
+                <a th:href="@{/user/add}" class="addUserA">添加用户</a>
+            </td>
+        </tr>
+        <tr>
+            <td width="20%">编号</td>
+            <td width="15%">姓名</td>
+            <td width="10%">年级</td>
+            <td width="30%">学校院系</td>
+            <td width="10%">用户类型</td>
+            <td width="25%">操作</td>
+        </tr>
+        <!-- th:if="${user.user.id ne 'root'}"  -->
+        <tr th:each="user:${page.list}">
+            <td th:text="${user.user.id}"></td>
+            <td th:text="${user.user.name}"></td>
+            <td th:text="${user.user.grade}">年级</td>
+            <td th:if="${user.department eq null} "></td>
+            <td th:if="${user.department ne null} " th:text="|${user.department}学院${user.major}|"></td>
+            <td th:if="${user.user.type} eq 0">管理员</td>
+            <td th:if="${user.user.type} eq 1">教师</td>
+            <td th:if="${user.user.type} eq 2">学生</td>
+            <td>
+                <a th:href="@{/user/{id}(id=${user.user.id})}" style="text-decoration: none;">
+                    <img th:src="@{/img/more.png}" width="24px" title="查看">
+                </a>
+                <img th:src="@{/img/delete.png}" id="delete" width="24px" title="删除" style="cursor: pointer;"
+                     th:onclick="deleteUser([[${user.user.id}]])">
+
+            </td>
+        </tr>
+    </table>
+    <!--删除表单-->
+    <form method="post" id="deleteForm">
+        <input type="hidden" name="_method" value="delete">
+    </form>
+    <span th:replace="/public/page :: page" ></span>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/set.js}"></script>
+<script>
+    var lis = document.getElementsByTagName("li");
+    lis[1].className = "select";
+
+    // 使用点击事件
+    function deleteUser(userId) {
+        if (confirm("确认删除？")) {
+            if (!(userId === "root")) {
+                // 删除员工操作
+                $("#deleteForm").attr("action", "/user/" + userId).submit();
+                return false;
+            } else {
+                alert("不能删除root管理员")
+            }
+        }
+    }
+
+    // 根据类型下拉框的改变获取类型值
+    $("#usertype").change(function () {
+        var type = $(this).children('option:selected').val();
+        window.location.href = "http://localhost:8001/user/1/" + type;
+
+    })
+    // 删除
+</script>
+<script th:inline="javascript">
+    var type = [[${type}]];
+    $(document).ready(function () {
+        set_select_checked("usertype", type)
+    })
+
+</script>
+</html>
